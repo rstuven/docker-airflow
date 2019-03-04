@@ -59,7 +59,7 @@ RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
 
 ARG AIRFLOW_VERSION=1.10.2
 
-RUN pip install apache-airflow[crypto,celery,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
+RUN pip install apache-airflow[crypto,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
 
 ARG AIRFLOW_DEPS=""
 RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${AIRFLOW_DEPS}]==${AIRFLOW_VERSION}; fi
