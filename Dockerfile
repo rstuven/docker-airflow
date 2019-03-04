@@ -47,9 +47,9 @@ RUN set -ex \
     && locale-gen \
     && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-ONBUILD ARG AIRFLOW_HOME=/usr/local/airflow
+ARG AIRFLOW_HOME=/usr/local/airflow
 
-ONBUILD RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
+RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
     && pip install -U pip setuptools wheel \
     && pip install \
         pytz \
@@ -85,7 +85,7 @@ RUN apt-get purge --auto-remove -yqq $buildDeps \
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
-ONBUILD RUN chown -R airflow: ${AIRFLOW_HOME}
+RUN chown -R airflow: ${AIRFLOW_HOME}
 
 EXPOSE 8080 5555 8793
 
