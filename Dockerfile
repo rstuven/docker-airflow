@@ -5,17 +5,13 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.6-slim
-LABEL maintainer="Puckel_"
+LABEL maintainer="Ricardo Stuven"
 
 # Never prompts the user for choices on installation/configuration of packages
 ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-ARG AIRFLOW_VERSION=1.10.2
-ARG AIRFLOW_HOME=/usr/local/airflow
-ARG AIRFLOW_DEPS=""
-ARG PYTHON_DEPS=""
 ENV AIRFLOW_GPL_UNIDECODE yes
 
 # Define en_US.
@@ -49,16 +45,32 @@ RUN set -ex \
         locales \
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
-    && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
-    && useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
+    && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+ONBUILD ARG AIRFLOW_HOME=/usr/local/airflow
+
+ONBUILD RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
     && pip install -U pip setuptools wheel \
-    && pip install pytz \
-    && pip install pyOpenSSL \
-    && pip install ndg-httpsclient \
-    && pip install pyasn1
-RUN pip install apache-airflow[crypto,celery,postgres,hive,jdbc,mysql,ssh${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}]==${AIRFLOW_VERSION}
-RUN pip install 'redis>=2.10.5,<3'
-RUN if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi
+    && pip install \
+        pytz \
+        pyOpenSSL \
+        ndg-httpsclient \
+        pyasn1
+
+ONBUILD ARG AIRFLOW_VERSION=1.10.2
+
+ONBUILD RUN pip install apache-airflow[crypto,celery,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
+
+ONBUILD ARG AIRFLOW_DEPS=""
+ONBUILD RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${PYTHON_DEPS}]==${AIRFLOW_VERSION}; fi
+
+# RUN pip install \
+#         redis>=3.2.0 \
+#         tornado>=4.2.0,<6.0.0
+
+ONBUILD ARG PYTHON_DEPS=""
+ONBUILD RUN if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi
+
 RUN apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
     && apt-get clean \
