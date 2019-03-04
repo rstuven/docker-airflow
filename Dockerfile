@@ -62,7 +62,7 @@ ARG AIRFLOW_VERSION=1.10.2
 RUN pip install apache-airflow[crypto,celery,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
 
 ARG AIRFLOW_DEPS=""
-RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${PYTHON_DEPS}]==${AIRFLOW_VERSION}; fi
+RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${AIRFLOW_DEPS}]==${AIRFLOW_VERSION}; fi
 
 # RUN pip install \
 #         redis>=3.2.0 \
