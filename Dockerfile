@@ -57,19 +57,19 @@ RUN useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow \
         ndg-httpsclient \
         pyasn1
 
-ONBUILD ARG AIRFLOW_VERSION=1.10.2
+ARG AIRFLOW_VERSION=1.10.2
 
-ONBUILD RUN pip install apache-airflow[crypto,celery,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
+RUN pip install apache-airflow[crypto,celery,postgres,jdbc,ssh]==${AIRFLOW_VERSION}
 
-ONBUILD ARG AIRFLOW_DEPS=""
-ONBUILD RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${PYTHON_DEPS}]==${AIRFLOW_VERSION}; fi
+ARG AIRFLOW_DEPS=""
+RUN if [ -n "${AIRFLOW_DEPS}" ]; then pip install apache-airflow[${PYTHON_DEPS}]==${AIRFLOW_VERSION}; fi
 
 # RUN pip install \
 #         redis>=3.2.0 \
 #         tornado>=4.2.0,<6.0.0
 
-ONBUILD ARG PYTHON_DEPS=""
-ONBUILD RUN if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi
+ARG PYTHON_DEPS=""
+RUN if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi
 
 RUN apt-get purge --auto-remove -yqq $buildDeps \
     && apt-get autoremove -yqq --purge \
